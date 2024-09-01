@@ -1,21 +1,52 @@
 import Background from "@/assets/login2.png"
-import Emoji from "@/assets/fingerEmoji.png"
-import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs"
+
+import { Tabs, TabsList } from "@/components/ui/tabs"
+import { TabsContent, TabsTrigger } from "@radix-ui/react-tabs"
 import { useState } from "react"
 import { Input } from "@/components/ui/input"
 import { Button } from "@/components/ui/button"
+import { toast } from "sonner"
+import { apiClient } from "@/lib/api-client"
+import { SIGNUP_ROUTE } from "@/utils/constants"
 
 function Auth() {
     
-    const [email, setemail] = useState("")
+    const [email, setEmail] = useState("")
     const [password , setPassword] = useState("")
     const [confirmPassword , setConfirmPassword] = useState("")
+
+    const validateSignup = () => {
+        if(!email.length){
+            toast.error("Email is required.");
+            return false;
+        }
+        if(!password.length){
+            toast.error("Password is required...");
+            return false;
+        }
+        if(password !== confirmPassword){
+            toast.error("Password and ConfirmPassword must be same.");
+            return false;
+        }
+        return true;
+    }
 
     const handleLogin = async () =>{
 
     }
 
     const handleSignup = async () =>{
+        try{
+            if(validateSignup()){
+                const response = await apiClient.post(SIGNUP_ROUTE,{ email,password })
+                console.log('Signup response:',response);
+                
+            }
+
+        }catch(error){
+            console.error('Signup error:', error);
+            toast.error('Signup failed, please try again.');
+        }
         
     }
     
@@ -26,7 +57,7 @@ function Auth() {
                 <div className="flex items-center justify-center flex-col">
                     <div className="flex items-center justify-center">
                         <h1 className="text-5xl font-bold md:text-6xl">Welcome</h1>
-                        {/* <img src="{Emoji}" alt="victory Emoji" className="h-[100px]" /> */}
+                       
                     </div>
 
                     <p className="font-medium text-center">Fill in the details to get started with the best chat app!</p>
