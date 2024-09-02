@@ -8,9 +8,11 @@ import { Button } from "@/components/ui/button"
 import { toast } from "sonner"
 import { apiClient } from "@/lib/api-client"
 import { LOGIN_ROUTE, SIGNUP_ROUTE } from "@/utils/constants"
+import { useNavigate } from "react-router-dom"
 
 function Auth() {
-    
+
+    const navigate = useNavigate()
     const [email, setEmail] = useState("")
     const [password , setPassword] = useState("")
     const [confirmPassword , setConfirmPassword] = useState("")
@@ -49,6 +51,10 @@ function Auth() {
         try{
             if(validateLogin()){
                 const response = await apiClient.post(LOGIN_ROUTE,{ email,password }, { withCredentials:true });
+                if(response.data.user.id){
+                    if(response.data.user.profileSetup) navigate('/chat')
+                        else navigate("/profile")
+                }
                 console.log('Login response:',response);
                 
             }
@@ -65,6 +71,10 @@ function Auth() {
         try{
             if(validateSignup()){
                 const response = await apiClient.post(SIGNUP_ROUTE,{ email,password }, { withCredentials:true });
+                if(response.status === 201){
+                    navigate("/login")
+                }
+
                 console.log('Signup response:',response);
                 
             }
@@ -73,6 +83,7 @@ function Auth() {
             console.error('Signup error:', error);
             toast.error('Signup failed, please try again.');
         }
+        
         
     }
     
@@ -91,7 +102,7 @@ function Auth() {
                 </div>
 
                 <div className="flex items-center justify-center w-full">
-                    <Tabs className="w-3/4">
+                    <Tabs className="w-3/4" defaultValue="login">
                         <TabsList className="bg-transparent rounded-nonew w-full">
 
                             <TabsTrigger value="login" className="data-[state=active]:bg-transparent text-black text-opacity-90 border-b-2 rounded-none w-full data-[state=active]:text-black data-[state=active]:font-semibold data-[state=active]:border-b-purple-500 p-3 transition-all duration-300">Login</TabsTrigger>
